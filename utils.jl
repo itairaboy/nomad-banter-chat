@@ -127,8 +127,9 @@ end
 module PlotHelpers
 
 using PlotlyJS
+using WordCloud
 
-export layout, config
+export layout, config, wordcloud2
 
 function layout()
     ly = Layout(
@@ -151,6 +152,28 @@ function config()
         ).fields
     )
     return cf
+end
+
+# Wrapper around WOrdCloud.wordcloud
+function wordcloud2(words, stopwords, mask, colors)
+    stopwords = WordCloud.stopwords_en ∪ stopwords
+    processed_text = processtext(words, stopwords=stopwords)
+
+    wc = wordcloud(
+        processed_text, 
+        mask = loadmask(mask),
+        angles = 0:90,
+        colors = colors,
+        density = 0.5,
+        fonts="Dosis",
+        minfontsize=1,
+        state=initwords!
+        )
+
+    placewords!(wc, style=:gathering, level=5, centeredword=true)
+    generate!(wc) 
+
+    return wc
 end
 
 end

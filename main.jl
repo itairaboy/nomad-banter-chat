@@ -61,6 +61,7 @@ msgs_per_active =
     end
 
 msgs_per_active[end-10:end, :]
+
 # Messages per time -----
 ## Per hour of the day -----
 msgs_per_dayhour =
@@ -104,7 +105,7 @@ relayout!(polar_perhour_plot,
         bgcolor="rgba(0,0,0,0)"
     )
 )
-
+polar_perhour_plot
 savefig(polar_perhour_plot, "svg/polar_perhour_plot.html")
 
 ## Per day of the week -----
@@ -173,7 +174,7 @@ msgs_per_date =
 
 # Number of emojis -----
 # Union of all messages
-all_messages = string(chat[:, :message])[23:end]
+all_messages = string(chat[:, :message])[23:end] # Ignore Union type specification
 
 symbols = count_symbols(all_messages)
 total_symbols = sum_symbols(symbols)
@@ -181,21 +182,8 @@ total_symbols = sum_symbols(symbols)
 media = count_media(all_messages)
 
 # Wordcloud -----
-stopwords = ["Media", "omitted"]
-tkn_txt = processtext(all_messages, stopwords=WordCloud.stopwords_en ∪ stopwords)
+stopwords = ["Media", "omitted", "u200d", "385"]
 
-wc = wordcloud(
-    tkn_txt, 
-    mask = loadmask("split_mask.png"),
-    angles = 0:90,
-    colors = custom_pal[3:end],
-    density = 0.5,
-    fonts="Dosis",
-    minfontsize=1,
-    state=initwords!
-    )
+wc = wordcloud2(all_messages, stopwords, "res/split_mask.png", custom_pal[3:end])
 
-placewords!(wc, style=:gathering, level=5, centeredword=true)
-generate!(wc) 
-
-paint(wc, "svg/wc.svg", background=false)
+paint(wc, "svg/wordcloud.svg", background=false)
