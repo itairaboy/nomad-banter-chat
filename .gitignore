@@ -2,3 +2,5 @@
 /data/*
 /icons
 *.svg
+.vscode
+.git

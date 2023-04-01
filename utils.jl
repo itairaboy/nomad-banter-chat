@@ -26,7 +26,6 @@ julia> chat = read_whatsapp("whatsapp.txt")
  ...
 ```
 """
-
 function read_whatsapp(path)
     f = open(path, "r")
     chat = readlines(f)
@@ -92,14 +91,55 @@ true
 """
 issymbol(c::AbstractChar) = Base.Unicode.category_code(c) == 22 # Other Symbol
 
-function count_char(s)
+"""
+count_char(c::Vector{Char})
+
+Counts the occurrence of each character in the given string `s`.
+
+# Arguments
+
+- `c::Vector{Char}`: The vector of chars to count the characters in.
+
+# Returns
+
+- `res::Dict{Char, Int}`: A dictionary where the keys are the characters in `s` and the values are the number of times that character appears in `s`.
+
+# Example
+
+```julia
+julia> count_char("hello")
+Dict{Char, Int64} with 4 entries:
+  'e' => 1
+  'l' => 2
+  'h' => 1
+  'o' => 1
+"""
+function count_char(c::Vector{Char})
     res = Dict{Char, Int}()
-    for c in s
-        res[c] = get(res, c, 0) + 1
+    for char in c
+        res[char] = get(res, char, 0) + 1
     end
     return res
 end
 
+"""
+count_symbols(s::AbstractString) -> Vector{Tuple{Char,Int}}
+
+Given a string `s`, returns a sorted vector of tuples where each tuple represents a Unicode symbol and its count in the input string.
+
+# Arguments
+- `s::AbstractString`: A string to analyze
+
+# Returns
+A sorted vector of tuples where each tuple contains the Unicode symbol and its count in the input string.
+
+# Example
+```julia
+julia> count_symbols("Hello, world! 🌍👋🏽")
+2-element Vector{Tuple{Char, Int}}:
+ ('🌍', 1)
+ ('👋', 1)
+ """
 function count_symbols(s)
     symbols = Vector{Char}()
     for c in s
@@ -132,7 +172,7 @@ using WordCloud
 export layout, config, wordcloud2
 
 function layout()
-    ly = Layout(
+    ly = PlotlyJS.Layout(
         font=attr(family="Dosis", color="white", size=36),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
@@ -143,7 +183,7 @@ function layout()
 end
 
 function config()
-    cf = PlotConfig(
+    cf = PlotlyJS.PlotConfig(
         toImageButtonOptions=attr(
             filename="new_plot",
             height=400 / 1.618, # Golden ratio
@@ -157,10 +197,10 @@ end
 # Wrapper around WOrdCloud.wordcloud
 function wordcloud2(words, stopwords, mask, colors)
     stopwords = WordCloud.stopwords_en ∪ stopwords
-    processed_text = processtext(words, stopwords=stopwords)
+    processed_text = processtext(string(words), stopwords=stopwords)
 
     wc = wordcloud(
-        processed_text, 
+        processed_text,
         mask = loadmask(mask),
         angles = 0:90,
         colors = colors,

@@ -1,6 +1,10 @@
 # Load necessary packages
-using CSV, DataFrames, DataFramesMeta, Dates
-using PlotlyJS, WordCloud
+using CSV
+using DataFrames
+using DataFramesMeta
+using Dates
+using PlotlyJS
+using WordCloud
 
 # Custom modules
 include("utils.jl")
@@ -40,8 +44,8 @@ msgs_per_user_plot =
         kind="bar",
         orientation="h",
         marker=attr(color=custom_pal[5], height=1),
-        layout(),
-        config=config()
+        PlotHelpers.layout(),
+        config=PlotHelpers.config()
     )
 
 relayout!(msgs_per_user_plot,
@@ -78,8 +82,8 @@ perhour_plot =
         y=:n,
         kind="bar",
         marker=attr(color=custom_pal[6]),
-        layout(),
-        config=config()
+        PlotHelpers.layout(),
+        config=PlotHelpers.config()
     )
 
 relayout!(perhour_plot,
@@ -96,7 +100,7 @@ polar_perhour_plot =
             mode="lines",
             marker=attr(color=custom_pal[3]),
             fill="toself"
-        ), layout())
+        ), PlotHelpers.layout())
 
 relayout!(polar_perhour_plot,
     polar=attr(
@@ -123,7 +127,7 @@ polar_weekday_plot =
             mode="lines",
             marker=attr(color=custom_pal[3]),
             fill="toself"
-        ), layout())
+        ), PlotHelpers.layout())
 
 relayout!(polar_weekday_plot,
     polar=attr(
@@ -153,8 +157,8 @@ month_plot =
         kind="scatter",
         fill="tozeroy",
         marker=attr(color=custom_pal[5]),
-        layout(),
-        config=config()
+        PlotHelpers.layout(),
+        config=PlotHelpers.config()
     )
 
 relayout!(month_plot,
@@ -176,14 +180,14 @@ msgs_per_date =
 # Union of all messages
 all_messages = string(chat[:, :message])[23:end] # Ignore Union type specification
 
-symbols = count_symbols(all_messages)
-total_symbols = sum_symbols(symbols)
+symbols = StringTools.count_symbols(all_messages)
+total_symbols = StringTools.sum_symbols(symbols)
 
-media = count_media(all_messages)
+media = StringTools.count_media(all_messages)
 
 # Wordcloud -----
 stopwords = ["Media", "omitted", "u200d", "385"]
 
-wc = wordcloud2(all_messages, stopwords, "res/split_mask.png", custom_pal[3:end])
+wc = PlotHelpers.wordcloud2(all_messages, stopwords, "res/split_mask.png", custom_pal[3:end])
 
 paint(wc, "svg/wordcloud.svg", background=false)
